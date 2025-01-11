@@ -1,10 +1,14 @@
 package com.example.usermicroservice.model.dto;
 
+import java.util.List;
+
 public class UserLoginDTO {
 
     private String username;
 
     private String password;
+
+    private List<String> roles;
 
     public String getPassword() {
         return password;
@@ -23,4 +27,11 @@ public class UserLoginDTO {
     }
 
 
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
 }

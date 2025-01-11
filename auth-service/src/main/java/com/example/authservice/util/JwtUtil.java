@@ -10,6 +10,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class JwtUtil {
@@ -18,11 +19,11 @@ public class JwtUtil {
     private String secret;
 
 
-    public String generateToken(String username, String role) {
+    public String generateToken(String username, List<String> roles) {
 
         return Jwts.builder()
                 .subject(username)
-                .claim("role", role)
+                .claim("roles", roles)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(getSignInKey())
@@ -56,4 +57,7 @@ public class JwtUtil {
 
     }
 
+    public List<String> extractRoles(String token) {
+        return extractClaims(token).get("roles", List.class);
+    }
 }

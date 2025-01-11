@@ -61,7 +61,7 @@ public class AuthController {
 
             dto = this.refreshTokenService.verifyExpiration(dto);
 
-            String newResponse = this.jwtUtil.generateToken(dto.getUsername(), "role");
+            String newResponse = this.jwtUtil.generateToken(dto.getUsername(), this.jwtUtil.extractRoles(dto.getToken()));
 
             return ResponseEntity.ok(new JwtResponseDTO(newResponse, dto.getToken(), "Bearer"));
 

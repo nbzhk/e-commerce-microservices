@@ -29,8 +29,8 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidLoginException("Invalid username or password");
         }
 
-        //TODO: add roles
-        return this.jwtUtil.generateToken(username, "role");
+
+        return this.jwtUtil.generateToken(username, user.getRoles());
     }
 
     @Override
