@@ -17,4 +17,6 @@ public interface UserService {
     UserDetailsDTO getUserDetails(Long id);
 
     UserLoginDTO findByUsername(String username);
+
+    void promoteToAdmin(String username);
 }

@@ -91,6 +91,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void promoteToAdmin(String username) {
+        try {
+            this.userRepository.findByUsername(username).ifPresent(currentUser -> {
+                List<UserRoleEnum> currentRoles = currentUser.getRoles();
+                currentRoles.add(UserRoleEnum.ADMIN);
+                currentUser.setRoles(currentRoles);
+                this.userRepository.save(currentUser);
+            });
+
+        } catch (UserNotFoundException e) {
+            log.error(e.getMessage());
+            throw new UserNotFoundException("User with username " + username + " not found.");
+        }
+    }
+
+    @Override
     public void deleteUser(Long id) {
 
         Optional<UserEntity> user = this.userRepository.findById(id);

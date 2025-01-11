@@ -72,4 +72,11 @@ public class UserController {
 
         return ResponseEntity.ok(byUsername);
     }
+
+    @PutMapping("/promote/{username}")
+    public ResponseEntity<String> promoteUserToAdmin(@PathVariable String username) {
+        this.userService.promoteToAdmin(username);
+
+        return ResponseEntity.ok("User " + username + " is now admin");
+    }
 }
