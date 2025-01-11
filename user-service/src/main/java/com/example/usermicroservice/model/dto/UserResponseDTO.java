@@ -1,7 +1,12 @@
 package com.example.usermicroservice.model.dto;
 
+import com.example.usermicroservice.model.enums.UserRoleEnum;
+
+import java.util.List;
+
 public class UserResponseDTO {
     private Long id;
+    private List<UserRoleEnum> roles;
     private String username;
     private String email;
     private String firstName;
@@ -90,5 +95,13 @@ public class UserResponseDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<UserRoleEnum> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<UserRoleEnum> roles) {
+        this.roles = roles;
     }
 }

@@ -29,6 +29,8 @@ public class ModelMapperConfig {
         typeMap.addMapping(u -> u.getUserDetails().getCity(), UserResponseDTO::setCity);
         typeMap.addMapping(u -> u.getUserDetails().getCountry(), UserResponseDTO::setCountry);
         typeMap.addMapping(u -> u.getUserDetails().getZip(), UserResponseDTO::setZip);
+        typeMap.addMapping(UserEntity::getRoles, UserResponseDTO::setRoles);
+
 
 
         return modelMapper;

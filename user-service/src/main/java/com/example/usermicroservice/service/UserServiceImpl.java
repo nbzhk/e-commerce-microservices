@@ -8,6 +8,7 @@ import com.example.usermicroservice.model.dto.UserRegistrationDTO;
 import com.example.usermicroservice.model.dto.UserResponseDTO;
 import com.example.usermicroservice.model.entity.UserDetailsEntity;
 import com.example.usermicroservice.model.entity.UserEntity;
+import com.example.usermicroservice.model.enums.UserRoleEnum;
 import com.example.usermicroservice.repo.UserDetailsRepository;
 import com.example.usermicroservice.repo.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,7 +44,9 @@ public class UserServiceImpl implements UserService {
             UserDetailsEntity newUserDetails = new UserDetailsEntity();
             newUserDetails.setUser(newUser);
 
+            newUser.setRoles(List.of(UserRoleEnum.USER));
             newUser.setUserDetails(newUserDetails);
+
 
             this.userRepository.save(newUser);
 

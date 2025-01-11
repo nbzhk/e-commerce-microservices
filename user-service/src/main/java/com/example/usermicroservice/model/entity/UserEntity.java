@@ -1,6 +1,10 @@
 package com.example.usermicroservice.model.entity;
 
+import com.example.usermicroservice.model.enums.UserRoleEnum;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -22,6 +26,12 @@ public class UserEntity {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_details_id", referencedColumnName = "id")
     private UserDetailsEntity userDetails;
+
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @ElementCollection
+    private List<UserRoleEnum> roles = new ArrayList<>();
 
     public UserEntity() {}
 
@@ -63,5 +73,14 @@ public class UserEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+
+    public List<UserRoleEnum> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<UserRoleEnum> roles) {
+        this.roles = roles;
     }
 }
