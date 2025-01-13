@@ -1,6 +1,7 @@
 package com.example.productservice.service.impl;
 
 import com.example.productservice.exception.ProductNotFoundException;
+import com.example.productservice.exception.ProductRegistrationException;
 import com.example.productservice.model.dto.CategoryDTO;
 import com.example.productservice.model.dto.ProductCreationDTO;
 import com.example.productservice.model.dto.ProductDataDTO;
@@ -32,17 +33,21 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public ProductDataDTO createProduct(ProductCreationDTO productCreationDTO) {
+    public ProductDataDTO createProduct(ProductCreationDTO productCreationDTO) throws ProductRegistrationException {
 
-        CategoryEntity category = createCategoryIfNotExist(productCreationDTO.getCategory());
+        try {
+            CategoryEntity category = createCategoryIfNotExist(productCreationDTO.getCategory());
 
-        ProductEntity newProduct = this.modelMapper.map(productCreationDTO, ProductEntity.class);
+            ProductEntity newProduct = this.modelMapper.map(productCreationDTO, ProductEntity.class);
 
-        newProduct.setCategory(category);
-        newProduct.setCreatedAt(LocalDateTime.now());
-        newProduct.setUpdatedAt(LocalDateTime.now());
+            newProduct.setCategory(category);
+            newProduct.setCreatedAt(LocalDateTime.now());
+            newProduct.setUpdatedAt(LocalDateTime.now());
 
-        return this.modelMapper.map(productRepository.save(newProduct), ProductDataDTO.class);
+            return this.modelMapper.map(productRepository.save(newProduct), ProductDataDTO.class);
+        } catch (Exception e) {
+            throw new ProductRegistrationException("Product creation was unsuccessful");
+        }
 
     }
 

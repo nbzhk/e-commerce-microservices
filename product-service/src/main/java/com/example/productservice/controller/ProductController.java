@@ -1,6 +1,7 @@
 package com.example.productservice.controller;
 
 import com.example.productservice.exception.ProductNotFoundException;
+import com.example.productservice.exception.ProductRegistrationException;
 import com.example.productservice.model.dto.ProductCreationDTO;
 import com.example.productservice.model.dto.ProductDataDTO;
 import com.example.productservice.service.ProductService;
@@ -20,7 +21,7 @@ public class ProductController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ProductDataDTO> createProduct(@Valid @RequestBody ProductCreationDTO productCreationDTO) {
+    public ResponseEntity<ProductDataDTO> createProduct(@Valid @RequestBody ProductCreationDTO productCreationDTO) throws ProductRegistrationException {
         ProductDataDTO product = this.productService.createProduct(productCreationDTO);
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
