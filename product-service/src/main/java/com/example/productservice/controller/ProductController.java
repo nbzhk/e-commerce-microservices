@@ -4,6 +4,7 @@ import com.example.productservice.exception.ProductNotFoundException;
 import com.example.productservice.exception.ProductRegistrationException;
 import com.example.productservice.model.dto.ProductCreationDTO;
 import com.example.productservice.model.dto.ProductDataDTO;
+import com.example.productservice.model.dto.ProductUpdateDTO;
 import com.example.productservice.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -36,5 +37,13 @@ public class ProductController {
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) throws ProductNotFoundException {
         this.productService.deleteProduct(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ProductDataDTO> updateProduct(@PathVariable Long id,
+                                                        @Valid @RequestBody ProductUpdateDTO productUpdateDTO) throws ProductNotFoundException {
+        ProductDataDTO product = this.productService.updateProduct(id, productUpdateDTO);
+
+        return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
 }

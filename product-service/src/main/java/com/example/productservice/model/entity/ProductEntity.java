@@ -1,5 +1,6 @@
 package com.example.productservice.model.entity;
 
+import com.example.productservice.model.dto.ProductUpdateDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,5 +51,30 @@ public class ProductEntity {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    public void updateEntity(ProductUpdateDTO productUpdateDTO) {
+        if (productUpdateDTO.getName() != null) {
+            this.name = productUpdateDTO.getName();
+        }
+
+        if (productUpdateDTO.getDescription() != null) {
+            this.description = productUpdateDTO.getDescription();
+        }
+
+        if (productUpdateDTO.getPrice() != null) {
+            this.price = productUpdateDTO.getPrice();
+        }
+
+        if (productUpdateDTO.getStockQuantity() >= 0) {
+            this.stockQuantity = productUpdateDTO.getStockQuantity();
+        }
+
+        if (productUpdateDTO.getImageUrl() != null) {
+            this.imageUrl = productUpdateDTO.getImageUrl();
+        }
+        if (productUpdateDTO.getRating() != null) {
+            this.rating = productUpdateDTO.getRating();
+        }
+    }
 
 }

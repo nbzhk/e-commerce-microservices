@@ -5,6 +5,7 @@ import com.example.productservice.exception.ProductRegistrationException;
 import com.example.productservice.model.dto.CategoryDTO;
 import com.example.productservice.model.dto.ProductCreationDTO;
 import com.example.productservice.model.dto.ProductDataDTO;
+import com.example.productservice.model.dto.ProductUpdateDTO;
 import com.example.productservice.model.entity.CategoryEntity;
 import com.example.productservice.model.entity.ProductEntity;
 import com.example.productservice.repository.CategoryRepository;
@@ -71,6 +72,22 @@ public class ProductServiceImpl implements ProductService {
         }
 
         this.productRepository.delete(product.get());
+    }
+
+    @Override
+    public ProductDataDTO updateProduct(Long id, ProductUpdateDTO productUpdateDTO) throws ProductNotFoundException {
+        ProductEntity product = this.productRepository.findById(id).orElseThrow(()
+                -> new ProductNotFoundException("Product with id: " + id + " was not found"));
+
+        product.updateEntity(productUpdateDTO);
+
+        CategoryEntity category = createCategoryIfNotExist(productUpdateDTO.getCategory());
+        product.setCategory(category);
+        product.setUpdatedAt(LocalDateTime.now());
+
+        ProductEntity saved = this.productRepository.save(product);
+
+        return this.modelMapper.map(saved, ProductDataDTO.class);
     }
 
     private CategoryEntity createCategoryIfNotExist(CategoryDTO category) {
