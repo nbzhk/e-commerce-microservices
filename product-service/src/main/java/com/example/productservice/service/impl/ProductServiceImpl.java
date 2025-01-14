@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -88,6 +89,17 @@ public class ProductServiceImpl implements ProductService {
         ProductEntity saved = this.productRepository.save(product);
 
         return this.modelMapper.map(saved, ProductDataDTO.class);
+    }
+
+    @Override
+    public List<ProductDataDTO> getProductsByCategory(String category) {
+        List<ProductEntity> productEntitiesByCategoryName = this.productRepository.getProductEntitiesByCategoryName(category);
+
+       return productEntitiesByCategoryName
+               .stream()
+               .map(productEntity -> this.modelMapper.map(productEntity, ProductDataDTO.class))
+               .toList();
+
     }
 
     private CategoryEntity createCategoryIfNotExist(CategoryDTO category) {

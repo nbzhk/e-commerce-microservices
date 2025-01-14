@@ -6,6 +6,8 @@ import com.example.productservice.model.dto.ProductCreationDTO;
 import com.example.productservice.model.dto.ProductDataDTO;
 import com.example.productservice.model.dto.ProductUpdateDTO;
 
+import java.util.List;
+
 public interface ProductService {
 
     ProductDataDTO createProduct(ProductCreationDTO productCreationDTO) throws ProductRegistrationException;
@@ -15,4 +17,6 @@ public interface ProductService {
     void deleteProduct(Long id) throws ProductNotFoundException;
 
     ProductDataDTO updateProduct(Long id, ProductUpdateDTO productUpdateDTO) throws ProductNotFoundException;
+
+    List<ProductDataDTO> getProductsByCategory(String category);
 }

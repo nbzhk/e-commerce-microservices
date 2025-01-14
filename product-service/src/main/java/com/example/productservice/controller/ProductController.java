@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/product")
 public class ProductController {
@@ -31,6 +33,12 @@ public class ProductController {
     public ResponseEntity<ProductDataDTO> getProduct(@PathVariable Long id) throws ProductNotFoundException {
         ProductDataDTO product = this.productService.getById(id);
         return new ResponseEntity<>(product, HttpStatus.FOUND);
+    }
+
+    @GetMapping("/allBy/category={category}")
+    public ResponseEntity<List<ProductDataDTO>> getProductByCategory(@PathVariable String category) {
+        List<ProductDataDTO> productsByCategory = this.productService.getProductsByCategory(category);
+        return new ResponseEntity<>(productsByCategory, HttpStatus.FOUND);
     }
 
     @DeleteMapping("/delete/{id}")
