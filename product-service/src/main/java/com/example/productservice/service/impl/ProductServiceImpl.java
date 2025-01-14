@@ -63,6 +63,16 @@ public class ProductServiceImpl implements ProductService {
         throw new ProductNotFoundException("Product with id: " + id + " was not found");
     }
 
+    @Override
+    public void deleteProduct(Long id) throws ProductNotFoundException {
+        Optional<ProductEntity> product = this.productRepository.findById(id);
+        if (product.isEmpty()) {
+            throw new ProductNotFoundException("Product with id: " + id + " was not found");
+        }
+
+        this.productRepository.delete(product.get());
+    }
+
     private CategoryEntity createCategoryIfNotExist(CategoryDTO category) {
         if (!this.categoryRepository.existsByName(category.getName())) {
             CategoryEntity newCategory = new CategoryEntity();

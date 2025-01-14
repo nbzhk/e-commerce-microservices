@@ -31,4 +31,10 @@ public class ProductController {
         ProductDataDTO product = this.productService.getById(id);
         return new ResponseEntity<>(product, HttpStatus.FOUND);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) throws ProductNotFoundException {
+        this.productService.deleteProduct(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

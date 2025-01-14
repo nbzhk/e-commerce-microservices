@@ -10,4 +10,6 @@ public interface ProductService {
     ProductDataDTO createProduct(ProductCreationDTO productCreationDTO) throws ProductRegistrationException;
 
     ProductDataDTO getById(Long id) throws ProductNotFoundException;
+
+    void deleteProduct(Long id) throws ProductNotFoundException;
 }
