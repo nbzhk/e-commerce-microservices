@@ -1,53 +1,48 @@
 package com.example.usermicroservice.controller;
 
-import com.example.usermicroservice.headers.HeaderGenerator;
 import com.example.usermicroservice.model.dto.UserDetailsDTO;
 import com.example.usermicroservice.model.dto.UserLoginDTO;
 import com.example.usermicroservice.model.dto.UserRegistrationDTO;
 import com.example.usermicroservice.model.dto.UserResponseDTO;
 import com.example.usermicroservice.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
-    private final HeaderGenerator headerGenerator;
 
-    public UserController(UserService userService, HeaderGenerator headerGenerator) {
+
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.headerGenerator = headerGenerator;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO,
-                                                        HttpServletRequest request) {
+    public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO) {
 
         UserResponseDTO userResponseDTO = this.userService.register(userRegistrationDTO);
 
-        return new ResponseEntity<>(
-                userResponseDTO,
-                this.headerGenerator.generateHeaderForSuccessPost(request, userResponseDTO.getId()),
-                HttpStatus.CREATED);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .build(userResponseDTO.getId());
+
+        return ResponseEntity.created(location)
+                .body(userResponseDTO);
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<UserDetailsDTO> updateUserDetails(@PathVariable("id") Long id,
-                                                            @Valid @RequestBody UserDetailsDTO userDetailsDTO,
-                                                            HttpServletRequest request) {
+                                                            @Valid @RequestBody UserDetailsDTO userDetailsDTO) {
 
         this.userService.updateDetails(id, userDetailsDTO);
 
-        return new ResponseEntity<>(
-                userDetailsDTO,
-                this.headerGenerator.generateHeaderForSuccessPut(request, id),
-                HttpStatus.OK
-        );
+        return ResponseEntity.ok().body(userDetailsDTO);
     }
 
     @GetMapping("/details/{id}")
