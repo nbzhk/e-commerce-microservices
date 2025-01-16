@@ -24,7 +24,7 @@ public class ApiGatewayApplication {
                         .path("/api/users/**")
                         .uri("http://localhost:8081"))
                 .route("product-service", r -> r
-                        .path("/api/product/**")
+                        .path("/api/products/**")
                         .uri("http://localhost:8083"))
                 .build();
     }
