@@ -10,7 +10,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -26,19 +28,22 @@ public class ProductController {
     @PostMapping("/create")
     public ResponseEntity<ProductDataDTO> createProduct(@Valid @RequestBody ProductCreationDTO productCreationDTO) throws ProductRegistrationException {
         ProductDataDTO product = this.productService.createProduct(productCreationDTO);
-        return new ResponseEntity<>(product, HttpStatus.CREATED);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").build(product.getId());
+
+        return ResponseEntity.created(location).body(product);
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<ProductDataDTO> getProduct(@PathVariable Long id) throws ProductNotFoundException {
         ProductDataDTO product = this.productService.getById(id);
-        return new ResponseEntity<>(product, HttpStatus.FOUND);
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @GetMapping("/allBy/category={category}")
     public ResponseEntity<List<ProductDataDTO>> getProductByCategory(@PathVariable String category) {
         List<ProductDataDTO> productsByCategory = this.productService.getProductsByCategory(category);
-        return new ResponseEntity<>(productsByCategory, HttpStatus.FOUND);
+        return new ResponseEntity<>(productsByCategory, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -52,6 +57,6 @@ public class ProductController {
                                                         @Valid @RequestBody ProductUpdateDTO productUpdateDTO) throws ProductNotFoundException {
         ProductDataDTO product = this.productService.updateProduct(id, productUpdateDTO);
 
-        return new ResponseEntity<>(product, HttpStatus.CREATED);
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
 }
