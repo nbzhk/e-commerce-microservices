@@ -28,8 +28,8 @@ public class UserController {
 
         UserResponseDTO userResponseDTO = this.userService.register(userRegistrationDTO);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
+        URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/api/users/details/{id}")
                 .build(userResponseDTO.getId());
 
         return ResponseEntity.created(location)

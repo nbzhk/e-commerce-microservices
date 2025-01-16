@@ -29,7 +29,10 @@ public class ProductController {
     public ResponseEntity<ProductDataDTO> createProduct(@Valid @RequestBody ProductCreationDTO productCreationDTO) throws ProductRegistrationException {
         ProductDataDTO product = this.productService.createProduct(productCreationDTO);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").build(product.getId());
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("api/products/get/{id}")
+                .build(product.getId());
 
         return ResponseEntity.created(location).body(product);
     }
