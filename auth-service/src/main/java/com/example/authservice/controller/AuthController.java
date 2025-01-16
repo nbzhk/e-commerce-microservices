@@ -8,6 +8,7 @@ import com.example.authservice.model.dto.TokenRequestDTO;
 import com.example.authservice.service.AuthService;
 import com.example.authservice.service.RefreshTokenService;
 import com.example.authservice.util.JwtUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -31,43 +32,46 @@ public class AuthController {
         String token = authService.login(loginRequestDTO.getUsername(), loginRequestDTO.getPassword());
         RefreshTokenDTO refreshToken = this.refreshTokenService.createRefreshToken(loginRequestDTO.getUsername());
 
-        return ResponseEntity.ok(new JwtResponseDTO(token, refreshToken.getToken(), "Bearer"));
+        return ResponseEntity.ok()
+                .header("Authorization", "Bearer " + token)
+                .body(new JwtResponseDTO(token, refreshToken.getToken(), "Bearer"));
     }
 
     @PostMapping("/validate")
     public ResponseEntity<Boolean> validateToken(@RequestHeader("Authorization") String token) {
-        try {
-            if (token != null && token.startsWith("Bearer ")) {
-                token = token.substring(7);
-            }
-
-            boolean isValid = authService.validateToken(token);
-
-            if (isValid) {
-                return ResponseEntity.ok(true);
-            } else {
-                return ResponseEntity.ok(false);
-            }
-
-        } catch (Exception e) {
-            return ResponseEntity.ok(false);
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
         }
+
+        boolean isValid = authService.validateToken(token);
+
+        if (isValid) {
+            return ResponseEntity.ok()
+                    .header("Pragma", "no-cache")
+                    .header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+                    .build();
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .header("WWW-Authenticate", "Bearer error=\"invalid-token\"")
+                    .build();
+        }
+
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<JwtResponseDTO> refreshToken(@RequestBody TokenRequestDTO request) throws TokenRefreshException {
-        try {
-            RefreshTokenDTO dto = this.refreshTokenService.findByToken(request.getRefreshToken());
 
-            dto = this.refreshTokenService.verifyExpiration(dto);
+        RefreshTokenDTO dto = this.refreshTokenService.findByToken(request.getRefreshToken());
 
-            String newResponse = this.jwtUtil.generateToken(dto.getUsername(), this.jwtUtil.extractRoles(dto.getToken()));
+        dto = this.refreshTokenService.verifyExpiration(dto);
 
-            return ResponseEntity.ok(new JwtResponseDTO(newResponse, dto.getToken(), "Bearer"));
+        String newResponse = this.jwtUtil.generateToken(dto.getUsername(), this.jwtUtil.extractRoles(dto.getToken()));
 
-        } catch (RuntimeException e) {
-            throw new TokenRefreshException(e.getMessage());
-        }
+        return ResponseEntity.ok()
+                .header("Authorization", "Bearer " + newResponse)
+                .body(new JwtResponseDTO(newResponse, dto.getToken(), "Bearer"));
+
+
     }
 
     @PostMapping("/logout")
@@ -75,7 +79,9 @@ public class AuthController {
         boolean deleted = this.refreshTokenService.deleteForUsername(loginRequestDTO.getUsername());
 
         if (deleted) {
-            return ResponseEntity.ok("Logged out successfully");
+            return ResponseEntity.ok()
+                    .header("Set-Cookie", "refresh-token=; HttpOnly; Path=/; Max-Age=0")
+                    .body("Logged out successfully");
         }
 
         throw new UsernameNotFoundException("Logout failed");
