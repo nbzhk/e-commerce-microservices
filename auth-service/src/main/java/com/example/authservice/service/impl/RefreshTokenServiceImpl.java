@@ -5,7 +5,6 @@ import com.example.authservice.model.dto.RefreshTokenDTO;
 import com.example.authservice.model.entity.RefreshTokenEntity;
 import com.example.authservice.repository.RefreshTokenRepository;
 import com.example.authservice.service.RefreshTokenService;
-import com.example.authservice.util.JwtUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,17 +21,14 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     private long refreshTokenExpiration;
 
     private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtUtil jwtUtil;
     private final ModelMapper modelMapper;
 
-    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, JwtUtil jwtUtil, ModelMapper modelMapper) {
+    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, ModelMapper modelMapper) {
         this.refreshTokenRepository = refreshTokenRepository;
-        this.jwtUtil = jwtUtil;
         this.modelMapper = modelMapper;
     }
 
 
-    //TODO: ERROR HANDLING
     @Override
     public RefreshTokenDTO createRefreshToken(String username) throws TokenRefreshException {
 
@@ -78,10 +74,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public boolean deleteForUsername(String username) {
-
         return this.refreshTokenRepository.deleteByUsername(username) > 0;
-
     }
-
-
 }
