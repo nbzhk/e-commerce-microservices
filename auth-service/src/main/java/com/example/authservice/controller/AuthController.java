@@ -78,13 +78,13 @@ public class AuthController {
     public ResponseEntity<String> logout(@RequestBody LoginRequestDTO loginRequestDTO) {
         boolean deleted = this.refreshTokenService.deleteForUsername(loginRequestDTO.getUsername());
 
-        if (deleted) {
-            return ResponseEntity.ok()
-                    .header("Set-Cookie", "refresh-token=; HttpOnly; Path=/; Max-Age=0")
-                    .body("Logged out successfully");
+        if (!deleted) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No active session found for user: " + loginRequestDTO.getUsername());
         }
 
-        throw new UsernameNotFoundException("Logout failed");
+        return ResponseEntity.ok()
+                .header("Set-Cookie", "refresh-token=; HttpOnly; Path=/; Max-Age=0")
+                .body("Logged out successfully");
 
     }
 }
