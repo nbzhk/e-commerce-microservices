@@ -1,162 +1,91 @@
-# User Microservice API Documentation
+# User Microservice
 
-## Overview
-The `UserController` provides RESTful endpoints for managing user resources in the system. It allows clients to register users, update user details, retrieve user information, and delete users. The API follows common HTTP conventions and returns appropriate status codes and headers for each operation.
+A user management microservice built with Spring Boot that handles user registration, profile management, and user role administration as part of the e-commerce microservices architecture.
 
----
+## Features
 
-## Endpoints
+- User registration and management
+- User profile updates
+- Role-based user administration
+- User details retrieval
+- Account deletion
+- User promotion capabilities
+- Integration with Spring Security for password encryption
+- Validation for user input
 
-### 1. Register User
-**POST** `/api/users/register`
+## Technologies
 
-Registers a new user in the system. Username, Email and Password are required.
+- Java 21
+- Spring Boot
+- Spring Security
+- Spring Data JPA
+- MySQL
+- H2 Database (for testing)
+- Model Mapper
+- Spring Cloud Netflix Eureka Client
+- Maven
 
-#### Request:
-- **Headers**:
-    - `Content-Type`: `application/json`
-- **Body(example)**:
-  ```json
-  {
-      "username": "exampleUsername",
-      "email": "example@example.com",
-      "password": "securePassword123"
-  }
-  ```
+## API Endpoints
 
-#### Response:
-- **Status Code**: `201 Created`
-- **Headers**:
-    - `Content-Type`: `application/json`
-    - `Location`: URL of the newly created user resource, e.g., `/api/users/{id}`
-- **Body**:
-  ```json
-  {
-      "username": "exampleUsername",
-      "email": "example@example.com"
-  }
-  ```
+### User Controller (`/api/users`)
 
----
+| Method | Endpoint              | Description                 | Request Body              | Response                    |
+|--------|----------------------|-----------------------------|--------------------------|-----------------------------|
+| POST   | /register            | Register new user           | UserRegistrationDTO      | UserResponseDTO            |
+| PUT    | /update/{id}         | Update user details         | UserDetailsDTO           | UserDetailsDTO             |
+| GET    | /details/{id}        | Get user details            | -                        | UserDetailsDTO             |
+| DELETE | /delete/{id}         | Delete user account         | -                        | No Content (204)           |
+| GET    | /find/{username}     | Find user by username       | -                        | UserLoginDTO               |
+| PUT    | /promote/{username}  | Promote user to admin       | -                        | Success message            |
 
-### 2. Update User Details
-**PUT** `/api/users/update/{id}`
+## Data Transfer Objects (DTOs)
 
-Updates the details of an existing user.
-
-#### Request:
-- **Path Parameters**:
-    - `id`: The ID of the user to be updated.
-- **Headers**:
-    - `Content-Type`: `application/json`
-- **Body**:
-  ```json
-  {
-      "firstName": "Pesho",
-      "lastName": "Pesheff",
-      "phoneNumber": "1234567890",
-      "address": "Street str.",
-      "city": "Las Vegas",
-      "country": "USA",
-      "zip": "12345"
-  }
-  ```
-
-#### Response:
-- **Status Code**: `200 OK`
-- **Headers**:
-    - `Content-Type`: `application/json`
-    - `Cache-Control`: `no-cache, no-store, must-revalidate`
-    - `Last-Modified`: Timestamp of the update operation.
-- **Body**:
-  ```json
-   {
-      "firstName": "Pesho",
-      "lastName": "Pesheff",
-      "phoneNumber": "1234567890",
-      "address": "Street str.",
-      "city": "Las Vegas",
-      "country": "USA",
-      "zip": "12345"
-  }
-  ```
-
----
-
-### 3. Get User Details
-**GET** `/api/users/details/{id}`
-
-Retrieves the details of an existing user.
-
-#### Request:
-- **Path Parameters**:
-    - `id`: The ID of the user to retrieve.
-
-#### Response:
-- **Status Code**: `200 OK`
-- **Headers**:
-    - `Content-Type`: `application/json`
-- **Body**:
-  ```json
-   {
-      "firstName": "Pesho",
-      "lastName": "Pesheff",
-      "phoneNumber": "1234567890",
-      "address": "Street str.",
-      "city": "Las Vegas",
-      "country": "USA",
-      "zip": "12345"
-  }
-  ```
-
----
-
-### 4. Delete User
-**DELETE** `/api/users/delete/{id}`
-
-Deletes an existing user from the system.
-
-#### Request:
-- **Path Parameters**:
-    - `id`: The ID of the user to delete.
-
-#### Response:
-- **Status Code**: `204 No Content`
-
----
-
-## Headers
-### General Headers
-- **Content-Type**:
-    - For successful requests: `application/json`
-    - For errors: `application/problem+json`
-
-### Generated Headers by `HeaderGenerator`
-#### Success POST:
-- **Location**: Points to the URI of the newly created resource.
-- **Content-Type**: `application/json`
-
-#### Success PUT:
-- **Location**: Points to the URI of the updated resource.
-- **Content-Type**: `application/json`
-- **Cache-Control**: `no-cache, no-store, must-revalidate`
-- **Last-Modified**: Timestamp indicating the last update.
-
----
-
-## Error Handling
-When an error occurs, the API returns a standard error response with the following format:
-
-```json
+### UserRegistrationDTO
+```java
 {
-    "timestamp": "2025-01-08T12:34:56.789+00:00",
-    "status": 400,
-    "error": "Bad Request",
-    "message": "Specific error message",
-    "path": "/api/users/register"
+    "username": "string",
+    "password": "string",
+    "email": "string",
+    "firstName": "string",
+    "lastName": "string"
 }
 ```
 
----
+### UserDetailsDTO
+```java
+{
+    "email": "string",
+    "firstName": "string",
+    "lastName": "string",
+    "address": "string",
+    "phoneNumber": "string"
+}
+```
 
+## Security
+
+The service implements several security measures:
+
+- Password encryption using Spring Security's crypto module
+- Input validation using Jakarta Validation
+- Role-based access control
+- Secure user data handling
+
+## Integration with Other Services
+
+This user service is designed to work within the microservices' architecture:
+
+- Registers with Eureka Server for service discovery
+- Can be called by other microservices for user information
+- Handles user authentication data for the auth-service
+
+
+## Error Handling
+
+The service includes exception handling for:
+- Invalid user input
+- User not found scenarios
+- Duplicate username/email
+- Unauthorized access attempts
+- Validation errors
 
