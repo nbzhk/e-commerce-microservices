@@ -1,9 +1,8 @@
-package com.example.authservice.service;
+package com.example.authservice.service.impl;
 
 import com.example.authservice.client.UserServiceClient;
 import com.example.authservice.exception.InvalidLoginException;
 import com.example.authservice.model.dto.LoginRequestDTO;
-import com.example.authservice.service.impl.AuthServiceImpl;
 import com.example.authservice.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
