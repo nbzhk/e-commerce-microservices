@@ -35,13 +35,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean validateToken(String token) {
-        try {
 
-            String username = jwtUtil.extractUsername(token);
-            return jwtUtil.isTokenValid(token, username);
+        String username = jwtUtil.extractUsername(token);
+        return jwtUtil.isTokenValid(token, username);
 
-        } catch (Exception e) {
-            return false;
-        }
     }
 }
