@@ -1,6 +1,7 @@
 package com.example.authservice.controller;
 
 import com.example.authservice.exception.TokenRefreshException;
+import com.example.authservice.model.dto.AuthResponseDTO;
 import com.example.authservice.model.dto.LoginRequestDTO;
 import com.example.authservice.model.dto.RefreshTokenDTO;
 import com.example.authservice.model.dto.TokenRequestDTO;
@@ -50,8 +51,10 @@ public class AuthControllerTest {
     private LoginRequestDTO loginRequest;
     private RefreshTokenDTO refreshTokenDTO;
     private TokenRequestDTO tokenRequest;
+    private AuthResponseDTO authResponseDTO;
     private static final String TEST_TOKEN = "test.jwt.token";
     private static final String TEST_REFRESH_TOKEN = "test-refresh-token";
+    private static final List<String> TEST_ROLES = new ArrayList<>(List.of("USER", "ADMIN"));
 
     @BeforeEach
     void setUp() {
@@ -65,12 +68,16 @@ public class AuthControllerTest {
 
         tokenRequest = new TokenRequestDTO();
         tokenRequest.setRefreshToken(TEST_REFRESH_TOKEN);
+
+        authResponseDTO = new AuthResponseDTO();
+        authResponseDTO.setToken(TEST_TOKEN);
+        authResponseDTO.setRoles(TEST_ROLES);
     }
 
     @Test
     void testLogin_ValidCredentials_ReturnsJwtResponse() throws Exception, TokenRefreshException {
-        when(authService.login(anyString(), anyString())).thenReturn(TEST_TOKEN);
-        when(refreshTokenService.createRefreshToken(anyString())).thenReturn(refreshTokenDTO);
+        when(authService.login(anyString(), anyString())).thenReturn(authResponseDTO);
+        when(refreshTokenService.createRefreshToken(anyString(), any())).thenReturn(refreshTokenDTO);
 
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -2,6 +2,7 @@ package com.example.authservice.service.impl;
 
 import com.example.authservice.client.UserServiceClient;
 import com.example.authservice.exception.InvalidLoginException;
+import com.example.authservice.model.dto.AuthResponseDTO;
 import com.example.authservice.model.dto.LoginRequestDTO;
 import com.example.authservice.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,9 +63,10 @@ public class AuthServiceTest {
         when(this.jwtUtil.generateToken(validUserTest.getUsername(), validUserTest.getRoles()))
                 .thenReturn(TEST_TOKEN);
 
-        String token = this.authService.login(validUserTest.getUsername(), validUserTest.getPassword());
+        AuthResponseDTO authResponseDTO = this.authService.login(validUserTest.getUsername(), validUserTest.getPassword());
 
-        assertEquals(TEST_TOKEN, token);
+        assertNotNull(response);
+        assertEquals(TEST_TOKEN, authResponseDTO.getToken());
     }
 
     @Test

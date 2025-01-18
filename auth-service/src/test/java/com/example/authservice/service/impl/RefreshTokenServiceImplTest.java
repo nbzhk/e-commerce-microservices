@@ -4,6 +4,7 @@ import com.example.authservice.exception.TokenRefreshException;
 import com.example.authservice.model.dto.RefreshTokenDTO;
 import com.example.authservice.model.entity.RefreshTokenEntity;
 import com.example.authservice.repository.RefreshTokenRepository;
+import com.example.authservice.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,6 +28,7 @@ public class RefreshTokenServiceImplTest {
 
     private static final String TEST_USERNAME = "test_username";
     private static final String TEST_TOKEN = UUID.randomUUID().toString();
+    private static final List<String> TEST_ROLES = Arrays.asList("USER", "ADMIN");
     private static final Long REFRESH_TOKEN_EXPIRATION = 86400000L;
 
     @Mock
@@ -32,6 +36,9 @@ public class RefreshTokenServiceImplTest {
 
     @Mock
     private ModelMapper modelMapper;
+
+    @Mock
+    private JwtUtil jwtUtil;
 
     @InjectMocks
     private RefreshTokenServiceImpl refreshTokenService;
@@ -59,7 +66,9 @@ public class RefreshTokenServiceImplTest {
 
         when(this.modelMapper.map(any(RefreshTokenEntity.class), eq(RefreshTokenDTO.class))).thenReturn(testDTO);
 
-        RefreshTokenDTO result = this.refreshTokenService.createRefreshToken(TEST_USERNAME);
+        when(this.jwtUtil.generateRefreshToken(TEST_USERNAME, TEST_ROLES)).thenReturn(TEST_TOKEN);
+
+        RefreshTokenDTO result = this.refreshTokenService.createRefreshToken(TEST_USERNAME, TEST_ROLES);
 
         assertNotNull(result);
         assertEquals(TEST_USERNAME, result.getUsername());
@@ -68,12 +77,12 @@ public class RefreshTokenServiceImplTest {
     }
 
     @Test
-    void testCreateRefreshToken_Failure_ShouldThrow() throws TokenRefreshException {
+    void testCreateRefreshToken_Failure_ShouldThrow() {
         when(this.refreshTokenRepository.save(any(RefreshTokenEntity.class)))
                 .thenThrow(new DataIntegrityViolationException("Save failed"));
 
         assertThrows(TokenRefreshException.class,
-                () -> this.refreshTokenService.createRefreshToken(TEST_USERNAME));
+                () -> this.refreshTokenService.createRefreshToken(TEST_USERNAME, TEST_ROLES));
         verify(this.refreshTokenRepository, times(1)).deleteByUsername(TEST_USERNAME);
     }
 
@@ -106,7 +115,7 @@ public class RefreshTokenServiceImplTest {
     }
 
     @Test
-    void testVerifyExpiration_Failure_WithExpiredToken_ShouldThrow() throws TokenRefreshException {
+    void testVerifyExpiration_Failure_WithExpiredToken_ShouldThrow() {
         RefreshTokenDTO expiredDTO = new RefreshTokenDTO();
         expiredDTO.setToken(TEST_TOKEN);
         expiredDTO.setUsername(TEST_USERNAME);
