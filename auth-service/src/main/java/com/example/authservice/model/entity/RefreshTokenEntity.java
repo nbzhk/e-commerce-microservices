@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "refresh_tokens")
@@ -25,5 +26,7 @@ public class RefreshTokenEntity {
     private String username;
     @Column(nullable = false)
     private Instant expires;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles;
 
 }

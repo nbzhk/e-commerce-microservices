@@ -2,6 +2,7 @@ package com.example.authservice.service.impl;
 
 import com.example.authservice.client.UserServiceClient;
 import com.example.authservice.exception.InvalidLoginException;
+import com.example.authservice.model.dto.AuthResponseDTO;
 import com.example.authservice.model.dto.LoginRequestDTO;
 import com.example.authservice.service.AuthService;
 import com.example.authservice.util.JwtUtil;
@@ -22,15 +23,16 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String login(String username, String password) {
+    public AuthResponseDTO login(String username, String password) {
         LoginRequestDTO user = userServiceClient.findByUsername(username).getBody();
 
         if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
             throw new InvalidLoginException("Invalid username or password");
         }
 
+        String token = this.jwtUtil.generateToken(username, user.getRoles());
 
-        return this.jwtUtil.generateToken(username, user.getRoles());
+        return new AuthResponseDTO(token, user.getRoles());
     }
 
     @Override

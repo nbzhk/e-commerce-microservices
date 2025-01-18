@@ -18,6 +18,12 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
+    @Value("${jwt.access.token.expiration}")
+    private Long accessTokenExpiration;
+
+    @Value("${jwt.refresh.token.expiration}")
+    private Long refreshTokenExpiration;
+
 
     public String generateToken(String username, List<String> roles) {
 
@@ -25,7 +31,19 @@ public class JwtUtil {
                 .subject(username)
                 .claim("roles", roles)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+                .signWith(getSignInKey())
+                .compact();
+    }
+
+
+    public String generateRefreshToken(String username, List<String> roles) {
+
+        return Jwts.builder()
+                .subject(username)
+                .claim("roles", roles)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
                 .signWith(getSignInKey())
                 .compact();
     }

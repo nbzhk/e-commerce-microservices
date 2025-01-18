@@ -5,14 +5,15 @@ import com.example.authservice.model.dto.RefreshTokenDTO;
 import com.example.authservice.model.entity.RefreshTokenEntity;
 import com.example.authservice.repository.RefreshTokenRepository;
 import com.example.authservice.service.RefreshTokenService;
+import com.example.authservice.util.JwtUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class RefreshTokenServiceImpl implements RefreshTokenService {
@@ -20,24 +21,30 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Value("${jwt.refresh.token.expiration}")
     private long refreshTokenExpiration;
 
+
     private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtUtil jwtUtil;
     private final ModelMapper modelMapper;
 
-    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, ModelMapper modelMapper) {
+    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, JwtUtil jwtUtil, ModelMapper modelMapper) {
         this.refreshTokenRepository = refreshTokenRepository;
+        this.jwtUtil = jwtUtil;
         this.modelMapper = modelMapper;
     }
 
 
     @Override
-    public RefreshTokenDTO createRefreshToken(String username) throws TokenRefreshException {
+    public RefreshTokenDTO createRefreshToken(String username, List<String> roles) throws TokenRefreshException {
 
         this.refreshTokenRepository.deleteByUsername(username);
 
         RefreshTokenEntity refreshTokenEntity = new RefreshTokenEntity();
         refreshTokenEntity.setUsername(username);
-        refreshTokenEntity.setToken(UUID.randomUUID().toString());
-        refreshTokenEntity.setExpires(Instant.now().plusMillis(refreshTokenExpiration));
+        refreshTokenEntity.setRoles(roles);
+        refreshTokenEntity.setExpires(Instant.now().plusSeconds(refreshTokenExpiration));
+
+        String token = this.jwtUtil.generateRefreshToken(username, roles);
+        refreshTokenEntity.setToken(token);
 
         try {
             this.refreshTokenRepository.save(refreshTokenEntity);
@@ -76,4 +83,5 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public boolean deleteForUsername(String username) {
         return this.refreshTokenRepository.deleteByUsername(username) > 0;
     }
+
 }

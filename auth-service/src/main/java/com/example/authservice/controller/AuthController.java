@@ -1,16 +1,12 @@
 package com.example.authservice.controller;
 
 import com.example.authservice.exception.TokenRefreshException;
-import com.example.authservice.model.dto.JwtResponseDTO;
-import com.example.authservice.model.dto.LoginRequestDTO;
-import com.example.authservice.model.dto.RefreshTokenDTO;
-import com.example.authservice.model.dto.TokenRequestDTO;
+import com.example.authservice.model.dto.*;
 import com.example.authservice.service.AuthService;
 import com.example.authservice.service.RefreshTokenService;
 import com.example.authservice.util.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,12 +25,17 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) throws TokenRefreshException {
-        String token = authService.login(loginRequestDTO.getUsername(), loginRequestDTO.getPassword());
-        RefreshTokenDTO refreshToken = this.refreshTokenService.createRefreshToken(loginRequestDTO.getUsername());
+        AuthResponseDTO authResponse = authService.login(
+                loginRequestDTO.getUsername(),
+                loginRequestDTO.getPassword());
+
+        RefreshTokenDTO refreshToken = this.refreshTokenService.createRefreshToken(
+                loginRequestDTO.getUsername(),
+                authResponse.getRoles());
 
         return ResponseEntity.ok()
-                .header("Authorization", "Bearer " + token)
-                .body(new JwtResponseDTO(token, refreshToken.getToken(), "Bearer"));
+                .header("Authorization", "Bearer " + authResponse.getToken())
+                .body(new JwtResponseDTO(authResponse.getToken(), refreshToken.getToken(), "Bearer"));
     }
 
     @PostMapping("/validate")
@@ -65,13 +66,11 @@ public class AuthController {
 
         dto = this.refreshTokenService.verifyExpiration(dto);
 
-        String newResponse = this.jwtUtil.generateToken(dto.getUsername(), this.jwtUtil.extractRoles(dto.getToken()));
+        String newAccessToken = this.jwtUtil.generateToken(dto.getUsername(), this.jwtUtil.extractRoles(dto.getToken()));
 
         return ResponseEntity.ok()
-                .header("Authorization", "Bearer " + newResponse)
-                .body(new JwtResponseDTO(newResponse, dto.getToken(), "Bearer"));
-
-
+                .header("Authorization", "Bearer " + newAccessToken)
+                .body(new JwtResponseDTO(newAccessToken, dto.getToken(), "Bearer"));
     }
 
     @PostMapping("/logout")
