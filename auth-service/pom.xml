@@ -7,7 +7,7 @@
         <artifactId>e-commerce-microservices</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>auth-microservice</artifactId>
+    <artifactId>auth-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>auth-microservice</name>
     <description>auth-microservice</description>
