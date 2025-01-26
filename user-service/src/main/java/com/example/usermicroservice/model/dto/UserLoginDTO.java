@@ -4,6 +4,8 @@ import java.util.List;
 
 public class UserLoginDTO {
 
+    private Long id;
+
     private String username;
 
     private String password;
@@ -33,5 +35,13 @@ public class UserLoginDTO {
 
     public void setRoles(List<String> roles) {
         this.roles = roles;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

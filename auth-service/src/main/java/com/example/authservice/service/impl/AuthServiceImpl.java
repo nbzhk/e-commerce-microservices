@@ -1,5 +1,6 @@
 package com.example.authservice.service.impl;
 
+import com.example.authservice.client.CartServiceClient;
 import com.example.authservice.client.UserServiceClient;
 import com.example.authservice.exception.InvalidLoginException;
 import com.example.authservice.model.dto.AuthResponseDTO;
@@ -13,11 +14,13 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
 
     private final UserServiceClient userServiceClient;
+    private final CartServiceClient cartServiceClient;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthServiceImpl(UserServiceClient userServiceClient, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
+    public AuthServiceImpl(UserServiceClient userServiceClient, CartServiceClient cartServiceClient, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
         this.userServiceClient = userServiceClient;
+        this.cartServiceClient = cartServiceClient;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
     }
@@ -31,6 +34,8 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String token = this.jwtUtil.generateToken(username, user.getRoles());
+
+        this.cartServiceClient.createCartIfNotExist(user.getId());
 
         return new AuthResponseDTO(token, user.getRoles());
     }
