@@ -1,5 +1,6 @@
 package com.example.productservice.controller;
 
+import com.example.productservice.exception.ProductNotFoundException;
 import com.example.productservice.exception.ProductRegistrationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,5 +30,11 @@ public class ControllerAdvice {
     public ResponseEntity<String> handleProductRegistrationException(ProductRegistrationException e) {
         log.error(e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<String> handleProductNotFoundException(ProductNotFoundException e) {
+        log.error(e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 }
