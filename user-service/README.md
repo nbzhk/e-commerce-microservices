@@ -88,4 +88,3 @@ The service includes exception handling for:
 - Duplicate username/email
 - Unauthorized access attempts
 - Validation errors
-
