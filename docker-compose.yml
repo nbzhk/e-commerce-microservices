@@ -1,0 +1,114 @@
+services:
+  eureka-server:
+    build:
+      context: ./eureka-server
+    image: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - e-com-network
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    image: api-gateway
+    ports:
+      - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
+    depends_on:
+      - eureka-server
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      AUTH_SERVICE_HOST: auth-server
+      USER_SERVICE_HOST: user-service
+      PRODUCT_SERVICE_HOST: product-service
+      CART_SERVICE_HOST: cart-service
+    networks:
+      - e-com-network
+
+  mysql-db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: e-commerce-data-base
+    networks:
+      - e-com-network
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  user-service:
+    build:
+      context: ./user-service
+    image: user-service
+    ports:
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+    depends_on:
+      - eureka-server
+      - mysql-db
+    environment:
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      USER_DB_URL: mysql-db:3306/user_service
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    networks:
+      - e-com-network
+
+  auth-service:
+    build:
+      context: ./auth-service
+    image: auth-service
+    ports:
+      - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
+    depends_on:
+      - eureka-server
+      - mysql-db # Ensure auth-service starts after mysql-db
+    environment:
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      AUTH_DB_URL: mysql-db:3306/auth_service # Use the service name as hostname
+      JWT_SECRET: ${JWT_SECRET}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    networks:
+      - e-com-network
+
+  product-service:
+    build:
+      context: ./product-service
+    image: product-service
+    ports:
+      - "${PRODUCT_SERVICE_PORT}:${PRODUCT_SERVICE_PORT}"
+    depends_on:
+      - eureka-server
+      - mysql-db
+    environment:
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      PRODUCT_DB_URL: mysql-db:3306/product_service
+      JWT_SECRET: ${JWT_SECRET}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    networks:
+      - e-com-network
+
+  cart-service:
+    build:
+      context: ./cart-service
+    image: cart-service
+    ports:
+      - "${CART_SERVICE_PORT}:${CART_SERVICE_PORT}"
+    depends_on:
+      - eureka-server
+      - mysql-db
+    environment:
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      CART_DB_URL: mysql-db:3306/cart_service
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    networks:
+      - e-com-network
+
+networks:
+  e-com-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
