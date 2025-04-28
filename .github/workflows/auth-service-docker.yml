@@ -45,4 +45,4 @@ jobs:
       with:
         context: ./auth-service
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/user-service:latest,${{ secrets.DOCKERHUB_USERNAME }}/user-service:${{ github.sha }}
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/auth-service:latest,${{ secrets.DOCKERHUB_USERNAME }}/user-service:${{ github.sha }}
