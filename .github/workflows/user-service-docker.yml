@@ -43,6 +43,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: ./user-service
+        context: .
+        file: ./user-service/Dockerfile
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/user-service:latest,${{ secrets.DOCKERHUB_USERNAME }}/user-service:${{ github.sha }}
