@@ -44,7 +44,12 @@ public class UserServiceImpl implements UserService {
             UserDetailsEntity newUserDetails = new UserDetailsEntity();
             newUserDetails.setUser(newUser);
 
-            newUser.setRoles(List.of(UserRoleEnum.USER));
+            //The first registered user has always an ADMIN ROLE
+            if (this.userRepository.count() > 0) {
+                newUser.setRoles(List.of(UserRoleEnum.USER));
+            } else {
+                newUser.setRoles(List.of(UserRoleEnum.USER, UserRoleEnum.ADMIN));
+            }
             newUser.setUserDetails(newUserDetails);
 
 
