@@ -1,4 +1,4 @@
-name: Auth Service Build and Push to Docker Hub
+name: Cart Service Build and Push to Docker Hub
 on:
   push:
     branches: [ "main" ]
