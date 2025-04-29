@@ -1,5 +1,6 @@
 package com.example.authservice.service.impl;
 
+import com.example.authservice.client.CartServiceClient;
 import com.example.authservice.client.UserServiceClient;
 import com.example.authservice.exception.InvalidLoginException;
 import com.example.authservice.model.dto.AuthResponseDTO;
@@ -29,7 +30,10 @@ public class AuthServiceTest {
     private static final List<String> TEST_ROLES = new ArrayList<>(List.of("USER"));
 
     @Mock
-    private UserServiceClient client;
+    private UserServiceClient userServiceClient;
+
+    @Mock
+    private CartServiceClient cartServiceClient;
 
     @Mock
     private JwtUtil jwtUtil;
@@ -45,6 +49,7 @@ public class AuthServiceTest {
     @BeforeEach
     void setUp() {
         validUserTest = new LoginRequestDTO();
+        validUserTest.setId(1L);
         validUserTest.setUsername(TEST_USERNAME);
         validUserTest.setPassword(TEST_PASSWORD);
         validUserTest.setRoles(TEST_ROLES);
@@ -56,7 +61,7 @@ public class AuthServiceTest {
 
         ResponseEntity<LoginRequestDTO> response = ResponseEntity.ok(validUserTest);
 
-        when(this.client.findByUsername(anyString())).thenReturn(response);
+        when(this.userServiceClient.findByUsername(anyString())).thenReturn(response);
 
         when(this.passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
@@ -65,6 +70,7 @@ public class AuthServiceTest {
 
         AuthResponseDTO authResponseDTO = this.authService.login(validUserTest.getUsername(), validUserTest.getPassword());
 
+        verify(cartServiceClient).createCartIfNotExist(anyLong());
         assertNotNull(response);
         assertEquals(TEST_TOKEN, authResponseDTO.getToken());
     }
@@ -72,7 +78,7 @@ public class AuthServiceTest {
     @Test
     void testLogin_WithInvalidCredentials_ShouldThrow() {
 
-        when(this.client.findByUsername(anyString())).thenReturn(ResponseEntity.ok(null));
+        when(this.userServiceClient.findByUsername(anyString())).thenReturn(ResponseEntity.ok(null));
 
         assertThrows(InvalidLoginException.class,
                 () -> this.authService.login(TEST_USERNAME, TEST_PASSWORD),
@@ -83,7 +89,7 @@ public class AuthServiceTest {
     @Test
     void testLogin_WithFalsePassword_ShouldThrow() {
 
-        when(this.client.findByUsername(TEST_USERNAME)).thenReturn(ResponseEntity.ok(validUserTest));
+        when(this.userServiceClient.findByUsername(TEST_USERNAME)).thenReturn(ResponseEntity.ok(validUserTest));
 
         when(this.passwordEncoder.matches(TEST_PASSWORD, validUserTest.getPassword())).thenReturn(false);
 
