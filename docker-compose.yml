@@ -1,24 +1,20 @@
 services:
   eureka-server:
-    build:
-      context: ./eureka-server
-    image: eureka-server
+    image: nbzhk/eureka-server:latest
     ports:
       - "8761:8761"
     networks:
       - e-com-network
 
   api-gateway:
-    build:
-      context: ./api-gateway
-    image: api-gateway
+    image: nbzhk/api-gateway:latest
     ports:
       - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
     depends_on:
       - eureka-server
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
-      AUTH_SERVICE_HOST: auth-server
+      AUTH_SERVICE_HOST: auth-service
       USER_SERVICE_HOST: user-service
       PRODUCT_SERVICE_HOST: product-service
       CART_SERVICE_HOST: cart-service
@@ -37,9 +33,7 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   user-service:
-    build:
-      context: ./user-service
-    image: user-service
+    image: nbzhk/user-service:latest
     ports:
       - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
     depends_on:
@@ -54,27 +48,23 @@ services:
       - e-com-network
 
   auth-service:
-    build:
-      context: ./auth-service
-    image: auth-service
+    image: nbzhk/auth-service:latest
     ports:
       - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
     depends_on:
       - eureka-server
-      - mysql-db # Ensure auth-service starts after mysql-db
+      - mysql-db
     environment:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
-      AUTH_DB_URL: mysql-db:3306/auth_service # Use the service name as hostname
+      AUTH_DB_URL: mysql-db:3306/auth_service
       JWT_SECRET: ${JWT_SECRET}
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
     networks:
       - e-com-network
 
   product-service:
-    build:
-      context: ./product-service
-    image: product-service
+    image: nbzhk/product-service:latest
     ports:
       - "${PRODUCT_SERVICE_PORT}:${PRODUCT_SERVICE_PORT}"
     depends_on:
@@ -90,9 +80,7 @@ services:
       - e-com-network
 
   cart-service:
-    build:
-      context: ./cart-service
-    image: cart-service
+    image: nbzhk/cart-service:latest
     ports:
       - "${CART_SERVICE_PORT}:${CART_SERVICE_PORT}"
     depends_on:
