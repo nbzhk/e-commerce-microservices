@@ -1,4 +1,4 @@
-name: User-Service build
+name: User-Service Build and Push to Docker Hub
 on:
   push:
     branches: [ "main" ]
