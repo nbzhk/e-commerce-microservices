@@ -20,11 +20,9 @@ An authentication microservice built with Spring Boot that handles user authenti
 - JSON Web Tokens (JWT)
 - JPA/Hibernate
 - MySQL
-- H2 Database (for testing)
 - Maven
 - JUnit 5
 - Spring Boot Test
-- H2 in-memory database for testing
 - Spring Security Test utilities
 
 ## API Endpoints
