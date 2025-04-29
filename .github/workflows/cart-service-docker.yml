@@ -46,4 +46,4 @@ jobs:
         with:
           context: ./cart-service
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/cart-service:latest,${{ secrets.DOCKERHUB_USERNAME }}/user-service:${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/cart-service:latest,${{ secrets.DOCKERHUB_USERNAME }}/cart-service:${{ github.sha }}

@@ -46,4 +46,4 @@ jobs:
       with:
         context: ./api-gateway
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/api-gateway:latest,${{ secrets.DOCKERHUB_USERNAME }}/user-service:${{ github.sha }}
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/api-gateway:latest,${{ secrets.DOCKERHUB_USERNAME }}/api-gateway:${{ github.sha }}

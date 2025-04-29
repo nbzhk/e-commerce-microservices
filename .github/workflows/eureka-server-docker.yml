@@ -46,4 +46,4 @@ jobs:
         with:
           context: ./eureka-server
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/eureka-server:latest,${{ secrets.DOCKERHUB_USERNAME }}/user-service:${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/eureka-server:latest,${{ secrets.DOCKERHUB_USERNAME }}/eureka-server:${{ github.sha }}

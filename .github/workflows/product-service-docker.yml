@@ -46,4 +46,4 @@ jobs:
         with:
           context: ./product-service
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/product-service:latest,${{ secrets.DOCKERHUB_USERNAME }}/user-service:${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/product-service:latest,${{ secrets.DOCKERHUB_USERNAME }}/product-service:${{ github.sha }}
