@@ -5,6 +5,7 @@ services:
       - "8761:8761"
     networks:
       - e-com-network
+    restart: on-failure
 
   api-gateway:
     image: nbzhk/api-gateway:latest
@@ -20,6 +21,7 @@ services:
       CART_SERVICE_HOST: cart-service
     networks:
       - e-com-network
+    restart: on-failure
 
   mysql-db:
     image: mysql
@@ -46,6 +48,7 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
     networks:
       - e-com-network
+    restart: on-failure
 
   auth-service:
     image: nbzhk/auth-service:latest
@@ -62,6 +65,7 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
     networks:
       - e-com-network
+    restart: on-failure
 
   product-service:
     image: nbzhk/product-service:latest
@@ -78,6 +82,7 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
     networks:
       - e-com-network
+    restart: on-failure
 
   cart-service:
     image: nbzhk/cart-service:latest
@@ -93,6 +98,7 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
     networks:
       - e-com-network
+    restart: on-failure
 
 networks:
   e-com-network:
