@@ -111,6 +111,4 @@ public class ProductServiceImpl implements ProductService {
 
         return this.categoryRepository.findByName(category.getName());
     }
-
-
 }
