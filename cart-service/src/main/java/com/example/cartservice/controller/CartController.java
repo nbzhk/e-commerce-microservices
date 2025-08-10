@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/carts")
+@CrossOrigin(origins = "http://localhost:8080")
 public class CartController {
 
     private final CartService cartService;
